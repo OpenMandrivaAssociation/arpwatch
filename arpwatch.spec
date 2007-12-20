@@ -20,6 +20,7 @@ Requires(preun): rpm-helper
 Requires(pre): rpm-helper
 Requires(postun): rpm-helper
 Requires:	sendmail-command
+BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
 The arpwatch package contains arpwatch and arpsnmp.  Arpwatch and arpsnmp
