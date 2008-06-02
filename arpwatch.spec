@@ -52,7 +52,7 @@ libtoolize --copy --force
 %configure
 
 %make \
-    ARPDIR=%{_localstatedir}/arpwatch \
+    ARPDIR=%{_localstatedir}/lib/arpwatch \
     SENDMAIL="%{_sbindir}/sendmail"
 
 %install
@@ -61,24 +61,24 @@ libtoolize --copy --force
 install -d %{buildroot}%{_initrddir}
 install -d %{buildroot}%{_sysconfdir}/sysconfig
 install -d %{buildroot}%{_sbindir}
-install -d %{buildroot}%{_localstatedir}/arpwatch
+install -d %{buildroot}%{_localstatedir}/lib/arpwatch
 install -d %{buildroot}%{_mandir}/man8
 
 %makeinstall_std install-man
 
 for n in arp2ethers massagevendor; do
-    install -m755 $n %{buildroot}%{_localstatedir}/arpwatch
+    install -m755 $n %{buildroot}%{_localstatedir}/lib/arpwatch
 done
 
 for n in *.awk *.dat; do
-    install -m644 $n %{buildroot}%{_localstatedir}/arpwatch
+    install -m644 $n %{buildroot}%{_localstatedir}/lib/arpwatch
 done
 
 install -m0755 arpwatch.init %{buildroot}%{_initrddir}/arpwatch
 install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch 
 
 %pre
-%_pre_useradd arpwatch %{_localstatedir}/arpwatch /bin/sh
+%_pre_useradd arpwatch %{_localstatedir}/lib/arpwatch /bin/sh
 
 %post
 %_post_service arpwatch
@@ -99,15 +99,15 @@ install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/arpwatch
 %{_sbindir}/*
 %{_mandir}/man*/*
-%dir %attr(0755,arpwatch,arpwatch) %{_localstatedir}/arpwatch
-%config(noreplace) %{_localstatedir}/arpwatch/arp.dat
+%dir %attr(0755,arpwatch,arpwatch) %{_localstatedir}/lib/arpwatch
+%config(noreplace) %{_localstatedir}/lib/arpwatch/arp.dat
 #
 # (fg) 20010403 DON'T PUT THIS AS NOREPLACE! Ethernet codes are bound to
 # change, and if ever you have a new one, submit it to arpwatch author!
 #
-%config %{_localstatedir}/arpwatch/ethercodes.dat
-%{_localstatedir}/arpwatch/*.awk
-%{_localstatedir}/arpwatch/arp2ethers
-%{_localstatedir}/arpwatch/massagevendor
+%config %{_localstatedir}/lib/arpwatch/ethercodes.dat
+%{_localstatedir}/lib/arpwatch/*.awk
+%{_localstatedir}/lib/arpwatch/arp2ethers
+%{_localstatedir}/lib/arpwatch/massagevendor
 
 
