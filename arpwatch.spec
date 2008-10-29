@@ -1,7 +1,7 @@
 Summary:	Network monitoring tools for tracking IP addresses on the network
 Name:		arpwatch
 Version:	2.1a15
-Release:	%mkrel 3
+Release:	%mkrel 4
 Epoch:		2
 License:	BSD
 Group:		Monitoring
@@ -20,7 +20,7 @@ Requires(preun): rpm-helper
 Requires(pre): rpm-helper
 Requires(postun): rpm-helper
 Requires:	sendmail-command
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 The arpwatch package contains arpwatch and arpsnmp.  Arpwatch and arpsnmp
