@@ -1,7 +1,7 @@
 Summary:	Network monitoring tools for tracking IP addresses on the network
 Name:		arpwatch
 Version:	2.1a15
-Release:	%mkrel 4
+Release:	%mkrel 5
 Epoch:		2
 License:	BSD
 Group:		Monitoring
@@ -14,6 +14,7 @@ Patch1:		arpwatch-2.1a11-noip.diff
 Patch2:		arpwatch-2.1a13-drop_root.diff
 Patch3:		arpwatch-drop-man.patch
 Patch4:		arpwatch-2.1a13-mail_user.diff
+Patch5:		arpwatch-2.1a15-LDFLAGS.diff
 BuildRequires:	libpcap-devel
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
@@ -40,6 +41,7 @@ network.
 %patch2 -p0 -b .droproot
 %patch3 -p0 -b .droprootman
 %patch4 -p1 -b .mailuser
+%patch5 -p0
 
 cp %{SOURCE1} arpwatch.init
 cp %{SOURCE2} arpwatch.sysconfig
@@ -53,10 +55,11 @@ libtoolize --copy --force
 
 %make \
     ARPDIR=%{_localstatedir}/lib/arpwatch \
-    SENDMAIL="%{_sbindir}/sendmail"
+    SENDMAIL="%{_sbindir}/sendmail" \
+    LDFLAGS="%ldflags"
 
 %install
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 install -d %{buildroot}%{_initrddir}
 install -d %{buildroot}%{_sysconfdir}/sysconfig
@@ -90,7 +93,7 @@ install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch
 %_postun_userdel arpwatch
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -109,5 +112,3 @@ install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch
 %{_localstatedir}/lib/arpwatch/*.awk
 %{_localstatedir}/lib/arpwatch/arp2ethers
 %{_localstatedir}/lib/arpwatch/massagevendor
-
-
