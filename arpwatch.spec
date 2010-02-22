@@ -1,7 +1,7 @@
 Summary:	Network monitoring tools for tracking IP addresses on the network
 Name:		arpwatch
 Version:	2.1a15
-Release:	%mkrel 6
+Release:	%mkrel 7
 Epoch:		2
 License:	BSD
 Group:		Monitoring
@@ -50,9 +50,7 @@ cp %{SOURCE2} arpwatch.sysconfig
 libtoolize --copy --force
 
 %serverbuild
-
-%configure
-
+%configure2_5x
 %make \
     ARPDIR=%{_localstatedir}/lib/arpwatch \
     SENDMAIL="%{_sbindir}/sendmail" \
