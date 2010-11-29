@@ -1,7 +1,7 @@
 Summary:	Network monitoring tools for tracking IP addresses on the network
 Name:		arpwatch
 Version:	2.1a15
-Release:	%mkrel 7
+Release:	%mkrel 8
 Epoch:		2
 License:	BSD
 Group:		Monitoring
