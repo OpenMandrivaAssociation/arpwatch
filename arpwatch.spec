@@ -1,7 +1,7 @@
 Summary:	Network monitoring tools for tracking IP addresses on the network
 Name:		arpwatch
 Version:	2.1a15
-Release:	%mkrel 10
+Release:	11
 Epoch:		2
 License:	BSD
 Group:		Monitoring
@@ -15,13 +15,13 @@ Patch2:		arpwatch-2.1a13-drop_root.diff
 Patch3:		arpwatch-drop-man.patch
 Patch4:		arpwatch-2.1a13-mail_user.diff
 Patch5:		arpwatch-2.1a15-LDFLAGS.diff
+Patch6:		arpwatch-2.1a15-CVE-2012-2653.diff
 BuildRequires:	libpcap-devel
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 Requires(pre): rpm-helper
 Requires(postun): rpm-helper
 Requires:	sendmail-command
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 The arpwatch package contains arpwatch and arpsnmp.  Arpwatch and arpsnmp
@@ -42,6 +42,7 @@ network.
 %patch3 -p0 -b .droprootman
 %patch4 -p1 -b .mailuser
 %patch5 -p0
+%patch6 -p0 -b .CVE-2012-2653
 
 cp %{SOURCE1} arpwatch.init
 cp %{SOURCE2} arpwatch.sysconfig
@@ -57,7 +58,6 @@ libtoolize --copy --force
     LDFLAGS="%ldflags"
 
 %install
-rm -rf %{buildroot}
 
 install -d %{buildroot}%{_initrddir}
 install -d %{buildroot}%{_sysconfdir}/sysconfig
@@ -90,11 +90,7 @@ install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch
 %postun
 %_postun_userdel arpwatch
 
-%clean
-rm -rf %{buildroot}
-
 %files
-%defattr(-,root,root)
 %doc README CHANGES
 %attr(0755,root,root) %{_initrddir}/arpwatch
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/arpwatch
