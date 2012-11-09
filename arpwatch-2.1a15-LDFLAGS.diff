@@ -1,0 +1,24 @@
+--- Makefile.in	2008-12-20 16:01:04.000000000 +0100
++++ Makefile.in.oden	2008-12-20 16:02:56.000000000 +0100
+@@ -54,6 +54,7 @@
+ LIBS = @LIBS@
+ # Standard LIBS without libpcap.a
+ SLIBS = @LBL_LIBS@
++LDFLAGS = 
+ 
+ INSTALL = @INSTALL@
+ SENDMAIL = @V_SENDMAIL@
+@@ -95,11 +96,11 @@
+ 
+ arpwatch: $(WOBJ) @V_PCAPDEP@
+ 	@rm -f $@
+-	$(CC) $(CFLAGS) -o $@ $(WOBJ) $(LIBS)
++	$(CC) $(CFLAGS) -o $@ $(WOBJ) $(LDFLAGS) $(LIBS)
+ 
+ arpsnmp: $(SOBJ)
+ 	@rm -f $@
+-	$(CC) $(CFLAGS) -o $@ $(SOBJ) $(SLIBS)
++	$(CC) $(CFLAGS) -o $@ $(SOBJ) $(LDFLAGS) $(SLIBS)
+ 
+ version.o: version.c
+ version.c: $(srcdir)/VERSION

@@ -1,0 +1,141 @@
+diff -Naur arpwatch-2.1a13/addresses.h.in arpwatch-2.1a13.oden/addresses.h.in
+--- arpwatch-2.1a13/addresses.h.in	1996-06-05 07:40:29.000000000 +0200
++++ arpwatch-2.1a13.oden/addresses.h.in	2005-10-06 13:30:31.000000000 +0200
+@@ -1,2 +1,4 @@
+ #define WATCHER "root"
+-#define WATCHEE "arpwatch (Arpwatch)"
++#define WATCHEE "root (Arpwatch)"
++extern char *watcher;
++extern char *watchee;
+diff -Naur arpwatch-2.1a13/arpwatch.8 arpwatch-2.1a13.oden/arpwatch.8
+--- arpwatch-2.1a13/arpwatch.8	2005-10-06 13:34:06.000000000 +0200
++++ arpwatch-2.1a13.oden/arpwatch.8	2005-10-06 13:30:47.000000000 +0200
+@@ -46,6 +46,12 @@
+ ] [
+ .B -u
+ .I username
++] [
++.B -e
++.I username
++] [
++.B -s
++.I username
+ ]
+ .ad
+ .SH DESCRIPTION
+@@ -111,6 +117,27 @@
+ .IR username .
+ This is recommended for security reasons.
+ .LP
++If the
++.B -e 
++flag is used, 
++.B arpwatch
++sends e-mail messages to
++.I username
++rather than the default (root).
++If a single `-' character is given for the username,
++sending of e-mail is suppressed,
++but logging via syslog is still done as usual.
++(This can be useful during initial runs, to collect data
++without being flooded with messages about new stations.)
++.LP
++If the
++.B -s 
++flag is used, 
++.B arpwatch
++sends e-mail messages with
++.I username
++as the return address, rather than the default (root).
++.LP
+ Note that an empty
+ .I arp.dat
+ file must be created before the first time you run
+diff -Naur arpwatch-2.1a13/arpwatch.c arpwatch-2.1a13.oden/arpwatch.c
+--- arpwatch-2.1a13/arpwatch.c	2005-10-06 13:34:06.000000000 +0200
++++ arpwatch-2.1a13.oden/arpwatch.c	2005-10-06 13:33:21.000000000 +0200
+@@ -79,6 +79,7 @@
+ #include "machdep.h"
+ #include "setsignal.h"
+ #include "util.h"
++#include "addresses.h"
+ 
+ /* Some systems don't define these */
+ #ifndef ETHERTYPE_REVARP
+@@ -191,7 +192,7 @@
+ 	interface = NULL;
+ 	rfilename = NULL;
+ 	pd = NULL;
+-	while ((op = getopt(argc, argv, "df:i:n:wNr:u:")) != EOF)
++	while ((op = getopt(argc, argv, "df:i:n:wNr:u:e:s:")) != EOF)
+ 		switch (op) {
+ 
+ 		case 'd':
+@@ -237,6 +238,26 @@
+ 			}
+ 			break;
+ 
++		case 'e':
++			if ( optarg ) {
++				watcher = strdup(optarg);
++			}
++			else {
++				fprintf(stderr, "%s: Need recipient username/e-mail address after -e\n", prog);
++				usage();
++			}
++			break;
++
++		case 's':
++			if ( optarg ) {
++				watchee = strdup(optarg);
++			}
++			else {
++				fprintf(stderr, "%s: Need sender username/e-mail address after -s\n", prog);
++				usage();
++			}
++			break;
++
+ 		default:
+ 			usage();
+ 		}
+@@ -796,6 +817,7 @@
+ 
+ 	(void)fprintf(stderr, "Version %s\n", version);
+ 	(void)fprintf(stderr, "usage: %s [-dNw] [-f datafile] [-i interface]"
+-	    " [-n net[/width]] [-r file] [-u username]\n", prog);
++	    " [-n net[/width]] [-r file] [-u username]"
++	    " [-e username] [-s username]\n", prog);
+ 	exit(1);
+ }
+diff -Naur arpwatch-2.1a13/report.c arpwatch-2.1a13.oden/report.c
+--- arpwatch-2.1a13/report.c	2000-10-01 01:41:10.000000000 +0200
++++ arpwatch-2.1a13.oden/report.c	2005-10-06 13:33:46.000000000 +0200
+@@ -70,6 +70,9 @@
+ 
+ #define PLURAL(n) ((n) == 1 || (n) == -1 ? "" : "s")
+ 
++char *watcher = WATCHER;
++char *watchee = WATCHEE;
++
+ static int cdepth;	/* number of outstanding children */
+ 
+ static char *fmtdate(time_t);
+@@ -240,8 +243,6 @@
+ 	register FILE *f;
+ 	char tempfile[64], cpu[64], os[64];
+ 	char *fmt = "%20s: %s\n";
+-	char *watcher = WATCHER;
+-	char *watchee = WATCHEE;
+ 	char *sendmail = PATH_SENDMAIL;
+ 	char *unknown = "<unknown>";
+ 	char buf[132];
+@@ -258,6 +259,9 @@
+ 		}
+ 		f = stdout;
+ 		(void)putc('\n', f);
++	} else if (watcher == NULL || *watcher == NULL || *watcher == '-') {
++		dosyslog(LOG_NOTICE, title, a, e1, e2);
++		return;
+ 	} else {
+ 		/* Setup child reaper if we haven't already */
+ 		if (!init) {
