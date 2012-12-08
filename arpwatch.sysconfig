@@ -1,0 +1,24 @@
+# listen on interface X
+# ARPWATCH_INTERFACE="-i eth0"
+
+# filter out bogon warnings
+# ARPWATCH_LOCAL_NETWORKS="-n 192.168.100.0/24"
+
+# send no bogon warnings
+# ARPWATCH_NO_REPORTING="-N"
+
+# listen on an interface that has no IPv4 assigned address
+# ARPWATCH_NO_IP="-w"
+
+# -u <username> : defines with what user id arpwatch should run
+ARPWATCH_UID="-u arpwatch"
+
+# -e <email>  	: the <email> where to send the reports
+ARPWATCH_EMAIL_TO="-e root"
+
+# -s <from> 	: the <from>-address 
+ARPWATCH_EMAIL_FROM="-s 'root (Arpwatch)'"
+
+# set any other options here
+ARPWATCH_OPTIONS=""
+
