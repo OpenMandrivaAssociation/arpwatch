@@ -14,7 +14,7 @@ Patch2:		arpwatch-2.1a13-drop_root.diff
 Patch3:		arpwatch-drop-man.patch
 Patch5:		arpwatch-2.1a15-LDFLAGS.diff
 
-BuildRequires:	libpcap-devel
+BuildRequires:	pkgconfig(libpcap)
 # Just so autoconf can locate the sendmail binary
 BuildRequires:	postfix
 Requires(post,preun,pre,postun):	rpm-helper
