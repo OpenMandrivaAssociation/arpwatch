@@ -1,24 +1,25 @@
---- Makefile.in	2008-12-20 16:01:04.000000000 +0100
-+++ Makefile.in.oden	2008-12-20 16:02:56.000000000 +0100
-@@ -54,6 +54,7 @@
+diff -up arpwatch-3.1/Makefile.in.4~ arpwatch-3.1/Makefile.in
+--- arpwatch-3.1/Makefile.in.4~	2021-01-01 21:46:22.461085912 +0100
++++ arpwatch-3.1/Makefile.in	2021-01-01 21:47:21.561918513 +0100
+@@ -67,6 +67,7 @@ LDFLAGS = @LDFLAGS@
  LIBS = @LIBS@
  # Standard LIBS without libpcap.a
  SLIBS = @LBL_LIBS@
-+LDFLAGS = 
++LDFLAGS =
  
  INSTALL = @INSTALL@
- SENDMAIL = @V_SENDMAIL@
-@@ -95,11 +96,11 @@
+ CPPCHECK = cppcheck -q --enable=all --inline-suppr --suppress=variableScope -Dlint -D__FreeBSD__ -I/usr/include
+@@ -109,11 +110,11 @@ all: $(ALL)
  
- arpwatch: $(WOBJ) @V_PCAPDEP@
+ $(PROG): $(WOBJ) @V_PCAPDEP@
  	@rm -f $@
--	$(CC) $(CFLAGS) -o $@ $(WOBJ) $(LIBS)
-+	$(CC) $(CFLAGS) -o $@ $(WOBJ) $(LDFLAGS) $(LIBS)
+-	$(CC) $(LDFLAGS) -o $@ $(WOBJ) $(LIBS)
++	$(CC) $(LDFLAGS) -o $@ $(WOBJ) $(LDFLAGS) $(LIBS)
  
  arpsnmp: $(SOBJ)
  	@rm -f $@
--	$(CC) $(CFLAGS) -o $@ $(SOBJ) $(SLIBS)
-+	$(CC) $(CFLAGS) -o $@ $(SOBJ) $(LDFLAGS) $(SLIBS)
+-	$(CC) $(LDFLAGS) -o $@ $(SOBJ) $(SLIBS)
++	$(CC) $(LDFLAGS) -o $@ $(SOBJ) $(LDFLAGS) $(SLIBS)
  
- version.o: version.c
- version.c: $(srcdir)/VERSION
+ purify: $(SOBJ)
+ 	@rm -f $@

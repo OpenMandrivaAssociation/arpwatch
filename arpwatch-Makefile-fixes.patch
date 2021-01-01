@@ -1,22 +1,14 @@
-diff -urN arpwatch-2.1a6-old/Makefile.in arpwatch-2.1a6/Makefile.in
---- arpwatch-2.1a6-old/Makefile.in	Thu Jun 15 02:39:55 2000
-+++ arpwatch-2.1a6/Makefile.in	Thu Jul 20 17:11:09 2000
-@@ -110,14 +110,12 @@
- 	$(CC) $(CFLAGS) -o $@ zap.o intoa.o -lutil
+diff -up arpwatch-3.1/Makefile.in.1~ arpwatch-3.1/Makefile.in
+--- arpwatch-3.1/Makefile.in.1~	2021-01-01 21:33:15.730468895 +0100
++++ arpwatch-3.1/Makefile.in	2021-01-01 21:33:53.435063354 +0100
+@@ -125,8 +125,8 @@ version.c: $(srcdir)/VERSION
+ 	sed -e 's/.*/const char version[] = "&";/' $(srcdir)/VERSION > $@
  
- install: force
--	$(INSTALL) -m 555 -o bin -g bin arpwatch $(DESTDIR)$(BINDEST)
--	$(INSTALL) -m 555 -o bin -g bin arpsnmp $(DESTDIR)$(BINDEST)
-+	$(INSTALL) -m 755 arpwatch $(DESTDIR)$(BINDEST)
-+	$(INSTALL) -m 755 arpsnmp $(DESTDIR)$(BINDEST)
- 
- install-man: force
--	$(INSTALL) -m 444 -o bin -g bin $(srcdir)/arpwatch.8 \
--	    $(DESTDIR)$(MANDEST)/man8
--	$(INSTALL) -m 444 -o bin -g bin $(srcdir)/arpsnmp.8 \
--	    $(DESTDIR)$(MANDEST)/man8
-+	$(INSTALL) -m 644 $(srcdir)/arpwatch.8 $(DESTDIR)$(MANDEST)/man8
-+	$(INSTALL) -m 644 $(srcdir)/arpsnmp.8 $(DESTDIR)$(MANDEST)/man8
- 
- lint:	$(GENSRC) force
- 	lint -hbxn $(SRC) | \
+ install: $(ALL)
+-	$(INSTALL) -v -m 555 $(PROG) $(DESTDIR)$(BINDEST)
+-	$(INSTALL) -v -m 555 arpsnmp $(DESTDIR)$(BINDEST)
++	$(INSTALL) -v -m 755 $(PROG) $(DESTDIR)$(BINDEST)
++	$(INSTALL) -v -m 755 arpsnmp $(DESTDIR)$(BINDEST)
+ 	@diff $(srcdir)/$(PROG).8 $(DESTDIR)$(MANDEST)/man8 >/dev/null 2>&1 || \
+ 	    $(INSTALL) -v -m 444 $(srcdir)/$(PROG).8 $(DESTDIR)$(MANDEST)/man8
+ 	@diff $(srcdir)/arpsnmp.8 $(DESTDIR)$(MANDEST)/man8 >/dev/null 2>&1 || \

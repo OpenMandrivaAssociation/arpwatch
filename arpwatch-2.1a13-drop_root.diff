@@ -1,6 +1,7 @@
---- arpwatch.c	2005-10-06 13:27:16.000000000 +0200
-+++ arpwatch.c.oden	2005-10-06 13:26:39.000000000 +0200
-@@ -62,6 +62,7 @@
+diff -up arpwatch-3.1/arpwatch.c.2~ arpwatch-3.1/arpwatch.c
+--- arpwatch-3.1/arpwatch.c.2~	2019-11-30 19:35:23.000000000 +0100
++++ arpwatch-3.1/arpwatch.c	2021-01-01 21:40:49.739325396 +0100
+@@ -71,6 +71,7 @@ struct rtentry;
  #include <string.h>
  #include <syslog.h>
  #include <unistd.h>
@@ -8,10 +9,11 @@
  
  #include <pcap.h>
  
-@@ -141,6 +142,25 @@
- int	sanity_fddi(struct fddi_header *, struct ether_arp *, int);
- __dead	void usage(void) __attribute__((volatile));
+@@ -170,6 +171,26 @@ int	sanity_fddi(struct fddi_header *, st
+ int	toskip(u_int32_t);
+ void	usage(void) __attribute__((noreturn));
  
++
 +void dropprivileges(const char* user)
 +{
 +	struct passwd* pw;
@@ -34,41 +36,40 @@
  int
  main(int argc, char **argv)
  {
-@@ -153,6 +173,7 @@
- 	register char *interface, *rfilename;
+@@ -181,6 +202,7 @@ main(int argc, char **argv)
+ 	char *interface, *rfilename;
  	struct bpf_program code;
  	char errbuf[PCAP_ERRBUF_SIZE];
-+	char* serveruser = NULL;
++	char *serveruser = NULL;
  
  	if (argv[0] == NULL)
  		prog = "arpwatch";
-@@ -170,7 +191,7 @@
+@@ -198,7 +220,7 @@ main(int argc, char **argv)
  	interface = NULL;
  	rfilename = NULL;
  	pd = NULL;
--	while ((op = getopt(argc, argv, "df:i:n:wNr:")) != EOF)
-+	while ((op = getopt(argc, argv, "df:i:n:wNr:u:")) != EOF)
+-	while ((op = getopt(argc, argv, "CdD:Ff:i:n:NpP:qr:svw:W:x:zZ")) != EOF)
++	while ((op = getopt(argc, argv, "CdD:Ff:i:n:NpP:qr:su:vw:W:x:zZ")) != EOF)
  		switch (op) {
  
- 		case 'd':
-@@ -206,6 +227,16 @@
- 			rfilename = optarg;
+ 		case 'C':
+@@ -258,6 +280,15 @@ main(int argc, char **argv)
+ 			++suppress;
  			break;
  
 +		case 'u':
-+			if ( optarg ) {
++			if (optarg) {
 +				serveruser = strdup(optarg);
-+			}
-+			else {
++			} else {
 +				fprintf(stderr, "%s: Need username after -u\n", prog);
 +				usage();
 +			}
 +			break;
 +
- 		default:
- 			usage();
- 		}
-@@ -294,8 +325,11 @@
+ 		case 'v':
+ 			++vrrpflag;
+ 			break;
+@@ -383,8 +414,11 @@ main(int argc, char **argv)
  	 * Revert to non-privileged user after opening sockets
  	 * (not needed on most systems).
  	 */
@@ -82,11 +83,11 @@
  
  	/* Must be ethernet or fddi */
  	linktype = pcap_datalink(pd);
-@@ -762,6 +796,6 @@
- 
- 	(void)fprintf(stderr, "Version %s\n", version);
- 	(void)fprintf(stderr, "usage: %s [-dNw] [-f datafile] [-i interface]"
--	    " [-n net[/width]] [-r file]\n", prog);
-+	    " [-n net[/width]] [-r file] [-u username]\n", prog);
+@@ -927,6 +961,6 @@ usage(void)
+ 	    "usage: %s [-CdFNpqsvzZ] [-D arpdir] [-f datafile]"
+ 	    " [-i interface]\n\t"
+ 	    " [-P pidfile] [-w watcher@email] [-W watchee@email]\n\t"
+-	    " [-n net[/width]] [-x net[/width]] [-r file]\n", prog);
++	    " [-n net[/width]] [-x net[/width]] [-r file] [-u username]\n", prog);
  	exit(1);
  }

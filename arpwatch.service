@@ -1,0 +1,26 @@
+[Unit]
+Description=Arpwatch daemon which keeps track of ethernet/ip address pairings
+After=syslog.target network-online.target
+Documentation=man:arpwatch(8)
+
+[Service]
+Type=simple
+PrivateTmp=yes
+EnvironmentFile=-/etc/sysconfig/arpwatch
+ExecStart=/usr/sbin/arpwatch -u arpwatch -F $OPTIONS
+Restart=on-failure
+
+ProtectProc=invisible
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN CAP_SETGID CAP_SETUID
+ProtectSystem=full
+ProtectHome=true
+ProtectClock=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+SystemCallFilter=@system-service ~@aio ~@chown ~@clock ~@ipc ~@keyring ~@memlock ~@resources ~@sync ~@timer
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

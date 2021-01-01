@@ -1,19 +1,17 @@
 Summary:	Network monitoring tools for tracking IP addresses on the network
 Name:		arpwatch
-Epoch:		2
-Version:	2.1a15
-Release:	20
+Version:	3.1
+Release:	1
 License:	BSD
 Group:		Monitoring
 Url:		ftp://ftp.ee.lbl.gov
-Source0:	ftp://ftp.ee.lbl.gov/%{name}-%{version}.tar.gz
-Source1:	arpwatch.init
+Source0:	https://ee.lbl.gov/downloads/arpwatch/%{name}-%{version}.tar.gz
+Source1:	https://src.fedoraproject.org/rpms/arpwatch/raw/master/f/arpwatch.service
 Source2:	arpwatch.sysconfig
+Source3:	https://github.com/archlinux/svntogit-community/raw/packages/arpwatch/trunk/ethercodes.dat.gz
 Patch0:		arpwatch-Makefile-fixes.patch
-Patch1:		arpwatch-2.1a11-noip.diff
 Patch2:		arpwatch-2.1a13-drop_root.diff
 Patch3:		arpwatch-drop-man.patch
-Patch4:		arpwatch-2.1a13-mail_user.diff
 Patch5:		arpwatch-2.1a15-LDFLAGS.diff
 
 BuildRequires:	libpcap-devel
@@ -31,13 +29,7 @@ which will automatically keep traffic of the IP addresses on your
 network.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p0 -b .droproot
-%patch3 -p0 -b .droprootman
-%patch4 -p1 -b .mailuser
-%patch5 -p0
+%autosetup -p1
 
 cp %{SOURCE1} arpwatch.init
 cp %{SOURCE2} arpwatch.sysconfig
@@ -46,8 +38,8 @@ cp %{SOURCE2} arpwatch.sysconfig
 libtoolize --copy --force
 
 %serverbuild
-%configure2_5x
-%make \
+%configure
+%make_build \
 	ARPDIR=%{_localstatedir}/lib/arpwatch \
 	SENDMAIL="%{_sbindir}/sendmail" \
 	LDFLAGS="%ldflags"
@@ -55,13 +47,15 @@ libtoolize --copy --force
 %install
 install -d %{buildroot}%{_initrddir}
 install -d %{buildroot}%{_sysconfdir}/sysconfig
+install -d %{buildroot}%{_prefix}%{_sysconfdir}/rc.d
+install -d %{buildroot}/lib/systemd/system
 install -d %{buildroot}%{_sbindir}
 install -d %{buildroot}%{_localstatedir}/lib/arpwatch
 install -d %{buildroot}%{_mandir}/man8
 
-%makeinstall_std install-man
+%make_install
 
-for n in arp2ethers massagevendor; do
+for n in arp2ethers; do
     install -m755 $n %{buildroot}%{_localstatedir}/lib/arpwatch
 done
 
@@ -69,8 +63,13 @@ for n in *.awk *.dat; do
     install -m644 $n %{buildroot}%{_localstatedir}/lib/arpwatch
 done
 
-install -m0755 arpwatch.init %{buildroot}%{_initrddir}/arpwatch
-install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch 
+rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/rc.d
+install -m0755 %{S:1} %{buildroot}/lib/systemd/system
+install -m0644 %{S:2} %{buildroot}%{_sysconfdir}/sysconfig/arpwatch
+
+cp %{S:3} .
+gunzip ethercodes.dat.gz
+cp ethercodes.dat %{buildroot}%{_localstatedir}/lib/arpwatch/
 
 %pre
 %_pre_useradd arpwatch %{_localstatedir}/lib/arpwatch /bin/sh
@@ -86,7 +85,7 @@ install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch
 
 %files
 %doc README CHANGES
-%{_initrddir}/arpwatch
+/lib/systemd/system/arpwatch.service
 %config(noreplace) %{_sysconfdir}/sysconfig/arpwatch
 %{_sbindir}/*
 %{_mandir}/man*/*
@@ -99,5 +98,3 @@ install -m0644 arpwatch.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/arpwatch
 %config %{_localstatedir}/lib/arpwatch/ethercodes.dat
 %{_localstatedir}/lib/arpwatch/*.awk
 %{_localstatedir}/lib/arpwatch/arp2ethers
-%{_localstatedir}/lib/arpwatch/massagevendor
-
