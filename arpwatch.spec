@@ -1,7 +1,7 @@
 Summary:	Network monitoring tools for tracking IP addresses on the network
 Name:		arpwatch
-Version:	3.2
-Release:	2
+Version:	3.3
+Release:	1
 License:	BSD
 Group:		Monitoring
 Url:		ftp://ftp.ee.lbl.gov
