@@ -1,3 +1,4 @@
 sources:
-  arpwatch-3.3.tar.gz: e58c5210d4e8315064b2479d1b0e6db262c24560
+  arpwatch-3.9.tar.gz: 9bf078d27a1beed4d205ba9803cba76e738cb78e
+  arpwatch.service: 25efaa7d3d8e86c7f13c2886ce222f423421ab6f
   ethercodes.dat.gz: ddfd2e177fece461b84e1ade41c8a584422c6b6b
